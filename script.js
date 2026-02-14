@@ -29,87 +29,30 @@ for (let i = 0; i < 10; i++) {
 
 // Music button functionality
 const musicBtn = document.getElementById('musicBtn');
+const backgroundMusic = document.getElementById('backgroundMusic');
 let isPlaying = false;
 
+// Set initial volume
+backgroundMusic.volume = 0.5;
+
 musicBtn.addEventListener('click', function() {
-    isPlaying = !isPlaying;
-    
     if (isPlaying) {
-        musicBtn.classList.add('playing');
-        musicBtn.querySelector('.btn-text').textContent = 'Music Playing';
-        playRomanticSounds();
-    } else {
+        // Pause the music
+        backgroundMusic.pause();
         musicBtn.classList.remove('playing');
         musicBtn.querySelector('.btn-text').textContent = 'Play Music';
-        stopSounds();
+        isPlaying = false;
+    } else {
+        // Play the music
+        backgroundMusic.play().then(() => {
+            musicBtn.classList.add('playing');
+            musicBtn.querySelector('.btn-text').textContent = 'Pause Music';
+            isPlaying = true;
+        }).catch(error => {
+            console.log('Playback failed:', error);
+        });
     }
 });
-
-// Audio context for romantic sounds (using Web Audio API)
-let audioContext;
-let oscillator;
-let gainNode;
-
-function playRomanticSounds() {
-    // Create audio context
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // Play a soothing melody
-    playMelody();
-}
-
-function playMelody() {
-    // Romantic melody notes (simplified)
-    const melody = [
-        { freq: 523.25, duration: 0.5 }, // C5
-        { freq: 587.33, duration: 0.5 }, // D5
-        { freq: 659.25, duration: 0.5 }, // E5
-        { freq: 698.46, duration: 0.5 }, // F5
-        { freq: 783.99, duration: 1.0 }, // G5
-        { freq: 659.25, duration: 0.5 }, // E5
-        { freq: 698.46, duration: 0.5 }, // F5
-        { freq: 783.99, duration: 1.5 }, // G5
-    ];
-    
-    let time = audioContext.currentTime;
-    
-    melody.forEach(note => {
-        playNote(note.freq, time, note.duration);
-        time += note.duration;
-    });
-    
-    // Loop the melody
-    if (isPlaying) {
-        setTimeout(() => {
-            if (isPlaying) playMelody();
-        }, time * 1000 - audioContext.currentTime * 1000);
-    }
-}
-
-function playNote(frequency, startTime, duration) {
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    
-    osc.connect(gain);
-    gain.connect(audioContext.destination);
-    
-    osc.frequency.value = frequency;
-    osc.type = 'sine';
-    
-    gain.gain.setValueAtTime(0, startTime);
-    gain.gain.linearRampToValueAtTime(0.1, startTime + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-    
-    osc.start(startTime);
-    osc.stop(startTime + duration);
-}
-
-function stopSounds() {
-    if (audioContext) {
-        audioContext.close();
-        audioContext = null;
-    }
-}
 
 // Add sparkle effect on mouse move
 document.addEventListener('mousemove', function(e) {
