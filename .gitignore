@@ -1,0 +1,10 @@
+# Personal files
+Valentine_Letter.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
